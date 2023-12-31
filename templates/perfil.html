@@ -40,7 +40,7 @@
 
         .top{
             display: flex;
-            
+            flex-direction: column;
             flex-wrap: wrap;
             gap: 10px;
             width: 100%;
@@ -82,7 +82,7 @@
         }
 
         .rigth-perfil{
-            width: 80%;
+            width: 100%;
             display: flex;
             gap: 5px;
             justify-content: center;
@@ -160,6 +160,7 @@
             const params = new Object;
                     params.hash =  localStorage.getItem('hash')
                     params.id_modal =  modal
+                    params.lance = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].lance
 
                 const myPromisse = queryDB(params,2)
 
@@ -180,14 +181,12 @@
     func.fillModal = ()=>{
         const fill =  mainData.func.fillModal('#cmbMod',localStorage.getItem('hash'),0)
 
-        fill.then((resolve)=>{
-            console.log(document.querySelector('#cmbMod').value)
+        fill.then((resolve)=>{            
             getPerfil(document.querySelector('#cmbMod').value)
         })
     }
 
     function getPerfil(id_modal){
-
         const params = new Object;
         params.hash = localStorage.getItem('hash')
         params.id_modal = id_modal
@@ -195,7 +194,6 @@
         const myPromisse = queryDB(params,3);
         myPromisse.then((resolve)=>{
             const treinos = JSON.parse(resolve)
-
             const allday = document.querySelectorAll('.day-use')
             for(let i=0; i<allday.length; i++){
                 allday[i].className = 'day day-use'
@@ -203,9 +201,10 @@
             }
 
             document.querySelector('#last-4').innerHTML = treinos.length
-            document.querySelector('.activities').innerHTML = treinos.length * 10 + ' atividades'
+            let lances = 0
             for(let i=0; i<treinos.length; i++){
                 try{
+                    lances += parseInt(treinos[i].lance)
                     const day =  document.getElementById(treinos[i].dia.substr(0,10))
                     day.title  = day.title==='' ? 1 : parseInt(day.title) + 1
                     day.classList.add(`day-confirm-${day.title}`)
@@ -213,6 +212,7 @@
 
                 }
             }
+            document.querySelector('.activities').innerHTML = lances + ' atividades'      
         })
     }
 
@@ -221,6 +221,7 @@
     func.fillModal()
 
     document.querySelector('#cmbMod').addEventListener('change',()=>{
+        const opt = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex]
         getPerfil(document.querySelector('#cmbMod').value)
     })
 

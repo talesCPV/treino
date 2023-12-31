@@ -200,8 +200,7 @@
                 params.lance = lance
 
             const myPromisse = queryDB(params,5);
-            myPromisse.then((resolve)=>{
-                console.log(resolve)
+            myPromisse.then((resolve)=>{                
                 mainData.func.fillModal('#txtMyModal',localStorage.getItem('hash'),0)
                 mainData.perfil.func.fillModal()
             })

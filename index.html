@@ -56,6 +56,7 @@
                 <li class="only-login hide-menu" title="Alertas"><a onclick="showAlert()" class="menu-mobile"><span class="mdi mdi-bell-outline"></span><span id="alert" class="badge"></span> <div class="only-mobile label-alert">Alertas</div> </a></li>
                 <li class="only-login hide-menu" title="Configurações"><a onclick="openHTML('viewUser.html','modal',null)" class="menu-mobile"><img class="imgUser" id="imgUser" src="assets/default/user.jpeg"><div class="only-mobile">Config</div></a></li>
                 <li class="only-login" title="Logout"><a onclick="forceLogout()" class="menu-mobile"><span class="mdi mdi-power"></span><div class="only-mobile">Logout</div> </a></li>
+                <li class="only-logout hide" title="Login"><a onclick="forceLogin()" class="menu-mobile"><span class="mdi mdi-login"></span></a></li>
             </ul>            
         </div>
       </nav>
@@ -90,8 +91,10 @@
         openHTML('perfil.html','.main-content')
       }else{
         openHTML('blank.html','.main-content')
-        openHTML('login.html','.menu-perfil')
-        document.querySelector('.menu-items').style.padding = '0'
+        if(window.innerWidth < 770){
+          openHTML('login.html','.menu-perfil' )
+          document.querySelector('.menu-items' ).style.padding = '0 10px 0 0'
+        }
       }
       
 
@@ -122,6 +125,11 @@
             closeMenu()
             location.reload()
           }
+      }
+
+      function forceLogin(){
+        openHTML('login.html','modal')
+
       }
 
       function showAlert(){

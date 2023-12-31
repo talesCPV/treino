@@ -1,12 +1,11 @@
 var modal = document.getElementById("myModal");
 
 async function openHTML(  template="",where="modal", data=null, max='',){
-
   if(template.trim() != ""){
       return await new Promise((resolve,reject) =>{
           fetch( "templates/"+template)
           .then( stream => stream.text())
-          .then( text => {
+          .then( text => {            
               const temp = document.createElement('div');
               temp.name = template
               temp.innerHTML = text;
@@ -14,7 +13,6 @@ async function openHTML(  template="",where="modal", data=null, max='',){
                 if(err){
                     temp.innerHTML = '<title>ERROR 404!</title><template></template><script></script>'
                 }  
-
 
                 if(mainData[template.split('.')[0]] == undefined){
                     mainData[template.split('.')[0]] = new Object
@@ -70,7 +68,7 @@ function closeModal(id='all'){
     mod_main.style.display = (mod_main.querySelectorAll('.modal').length < 1) ? "none" : 'block'
 }
 
-function newModal(content, max=0){
+function newModal(content, max=0){   
     const mod_main = document.querySelector('#myModal')
     const index = mod_main.querySelectorAll('.modal-content').length        
     const offset_x = 0

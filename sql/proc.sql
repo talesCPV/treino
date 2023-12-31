@@ -46,13 +46,14 @@ DELIMITER ;
 DELIMITER $$
 	CREATE PROCEDURE sp_Doit(
 		IN Ihash varchar(77),
-        IN Imodal int(11)
+        IN Imodal int(11),
+		IN Ilance int(11)
     )
 	BEGIN
     
 		SET @id_call = (SELECT id FROM tb_usuario WHERE hash COLLATE utf8_general_ci = Ihash COLLATE utf8_general_ci LIMIT 1);
 		
-		INSERT INTO tb_doit (id_owner,id_modal) VALUES ( @id_call,Imodal);
+		INSERT INTO tb_doit (id_owner,id_modal,lance) VALUES ( @id_call,Imodal,Ilance);
 		SELECT * FROM tb_doit WHERE id_modal=Imodal AND id_owner = @id_call 
 			AND dia >= CURDATE() - INTERVAL 21 DAY - (IF(WEEKDAY(CURDATE())+1<7, WEEKDAY(CURDATE())+1, 0))
 			AND dia <= CURDATE() + (6 - IF(WEEKDAY(CURDATE())+1<7, WEEKDAY(CURDATE())+1, 0))

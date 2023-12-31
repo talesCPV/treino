@@ -443,9 +443,8 @@ mainData.func.fillModal = (id,hash,all=1)=>{
     const params = new Object;
         params.hash = hash
         params.all = all
-
     const myPromisse = queryDB(params,4);
-    return myPromisse.then((resolve)=>{
+    return myPromisse.then((resolve)=>{       
         const json = JSON.parse(resolve)
         const txt = document.querySelector(id)
         txt.innerHTML = ''
@@ -453,6 +452,8 @@ mainData.func.fillModal = (id,hash,all=1)=>{
             const opt = document.createElement('option')
             opt.value = json[i].id
             opt.innerHTML = json[i].nome
+            opt.lance = json[i].lance
+            opt.serie = json[i].serie
             txt.appendChild(opt)
         }
 
