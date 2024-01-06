@@ -21,12 +21,14 @@ CREATE TABLE tb_doit (
     id_owner INT(11) NOT NULL,
     id_modal INT(11) NOT NULL DEFAULT 1,
     dia TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    serie int(11) DEFAULT 3,
     lance int(11) DEFAULT 10,
     FOREIGN KEY (id_owner)
 	REFERENCES tb_usuario (id),
     PRIMARY KEY (id_owner , dia)
 )  ENGINE=MYISAM AUTO_INCREMENT=0 DEFAULT CHARSET=UTF8;
 
+ALTER TABLE tb_doit ADD COLUMN serie int(11) DEFAULT 3;
 ALTER TABLE tb_doit ADD COLUMN lance int(11) DEFAULT 10;
 
 DROP TABLE tb_modal;

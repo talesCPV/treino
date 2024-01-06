@@ -160,6 +160,7 @@
             const params = new Object;
                     params.hash =  localStorage.getItem('hash')
                     params.id_modal =  modal
+                    params.serie = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].serie
                     params.lance = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].lance
 
                 const myPromisse = queryDB(params,2)
@@ -203,11 +204,9 @@
 
             document.querySelector('#last-4').innerHTML = treinos.length
             let lances = 0
-            const serie = parseInt(document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].serie)
             for(let i=0; i<treinos.length; i++){
                 try{
-                    console.log(treinos[i])
-                    console.log(serie)
+                    const serie = parseInt(treinos[i].serie)
                     lances += parseInt(treinos[i].lance)
                     const day =  document.getElementById(treinos[i].dia.substr(0,10))
                     let dia = day.title==='' ? 1 : parseInt(day.title) +1
