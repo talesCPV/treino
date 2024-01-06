@@ -194,6 +194,7 @@
         const myPromisse = queryDB(params,3);
         myPromisse.then((resolve)=>{
             const treinos = JSON.parse(resolve)
+         
             const allday = document.querySelectorAll('.day-use')
             for(let i=0; i<allday.length; i++){
                 allday[i].className = 'day day-use'
@@ -202,12 +203,26 @@
 
             document.querySelector('#last-4').innerHTML = treinos.length
             let lances = 0
+            const serie = parseInt(document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].serie)
             for(let i=0; i<treinos.length; i++){
                 try{
+                    console.log(treinos[i])
+                    console.log(serie)
                     lances += parseInt(treinos[i].lance)
                     const day =  document.getElementById(treinos[i].dia.substr(0,10))
-                    day.title  = day.title==='' ? 1 : parseInt(day.title) + 1
-                    day.classList.add(`day-confirm-${day.title}`)
+                    let dia = day.title==='' ? 1 : parseInt(day.title) +1
+                    day.title  = dia
+                    
+                    if(dia > 0 && dia < serie){
+                        day.classList.add(`red`)
+                    }else if(dia == serie){
+                        day.classList.remove(`red`)
+                        day.classList.add(`yellow`)
+                    }else if(dia > serie){
+                        day.classList.remove(`yellow`)
+                        day.classList.add(`black`)
+                    }
+//                    day.classList.add(`day-confirm-${dia}`)
                 }catch{
 
                 }

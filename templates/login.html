@@ -76,7 +76,7 @@
 
                 myPromisse.then((resolve)=>{
                     const json = JSON.parse(resolve)[0]
-console.log(json)                    
+
                     if(json.login == '1'){
                         localStorage.setItem('idUser',json.id)
                         localStorage.setItem('email',params.email)

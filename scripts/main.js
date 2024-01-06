@@ -194,10 +194,13 @@ function calendar(){
     cal.className = 'calendar'
     
     const td = new Date
+/*    
     while(td.getDay()>0){
         td.change(-1)
     }                
     td.change(-21)
+*/
+    td.change(-(21+td.getDay()))
 
     for(let w=0; w<5; w++){
         const week = document.createElement('div')

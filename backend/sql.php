@@ -8,6 +8,7 @@
         "4"  => 'CALL sp_viewModal("x00",x01);',
         "5"  => 'CALL sp_addMyModal("x00",x01,x02,x03);',
         "6"  => 'CALL sp_addModal("x00","x01");',
+        "7"  => 'SELECT * FROM vw_chart WHERE ID_USER=x00;',
         
     );
 

@@ -21,7 +21,7 @@ CREATE TABLE tb_doit (
     id_owner INT(11) NOT NULL,
     id_modal INT(11) NOT NULL DEFAULT 1,
     dia TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ance int(11) DEFAULT 10,
+    lance int(11) DEFAULT 10,
     FOREIGN KEY (id_owner)
 	REFERENCES tb_usuario (id),
     PRIMARY KEY (id_owner , dia)
