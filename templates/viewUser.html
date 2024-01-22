@@ -1,0 +1,280 @@
+<title>
+    
+</title>
+<template>
+    <style>
+        
+        fieldset{
+            display: flex;
+            gap: 10px;
+        }
+
+        legend{
+            width: auto !important;
+        }
+
+        input[type="email"], input[type="password"]{
+            width: 95%;
+            height: 30px;
+        }
+
+        .frm-user{
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .img-perfil{
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            width: 40%;
+        }
+
+        .data-perfil{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+            width: 60%;
+            justify-content: center;
+        }
+
+        .top-perfil{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .top-perfil * {
+            width: 50%;
+        }
+
+        .img-perfil *, .data-perfil *{
+            width: 95%;
+        }
+
+        .line *{
+            width: 100%;
+        }
+
+        .inline{
+            display: flex;
+            gap :10px;
+        }
+
+        .midle-buttons{         
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 20%;
+            padding-top: 20px;
+        }
+
+        .midle-buttons button{
+            margin: 0;
+        }
+        .combo{
+            width: 40%;
+        }
+
+        #cnvImg{
+            border-radius: 10% !important;
+            cursor: pointer;
+        }
+
+        #cnvImg:hover{
+            border: 1px solid red;
+        }
+
+        #up_file{
+            margin-bottom: 20px;
+        }
+
+
+        @media (max-width: 769px) {
+
+            .data-perfil, .img-perfil{
+                width: 100%;                
+            }
+
+        }
+
+    </style>
+
+    <div class="frm-user">
+        
+        <div class="img-perfil">
+            <canvas width="300" height="300" id="cnvImg"></canvas>
+            <input  name="up_file" id="up_file" type="file" accept=".jpg,.jpeg,.png">
+    
+<!--            <button id="btnUpload" class="btn btn-primary">upload</button>  -->
+        </div>
+
+        <div class="data-perfil">
+
+            <div class="top-perfil">
+                <input id="edtMail" type="email" maxlength="70" inputmode="email" placeholder="* Email" onkeyup="validate(this)" >
+                <input id="edtNick" type="text" maxlength="15" placeholder="* Nick" onkeyup="valNoSpace(this)">
+                <input id="edtPass" type="password" maxlength="12" placeholder="* Senha" onkeyup="valNoSpace(this)">
+                <input id="edtRePass" type="password" maxlength="12" placeholder="* Repita a Senha" onkeyup="valNoSpace(this)">
+                <div class="edtbtn">
+                    <input type="text" id="edtCidade" readonly placeholder="Cidade-UF">
+                    <button id="btnCidade" onclick="openHTML('cidade.html','modal',{'call':'edtuser'},400)"><span class="mdi mdi-magnify"></span></button>
+                </div> 
+                <button id="btnSave" class="btn btn-primary">Save</button>                
+            </div>
+
+            <fieldset>
+                <legend>Modalidades</legend>
+
+                <div class="inline">
+                    <label for="edtSerie">Série</label>
+                    <input type="text" id="edtSerie" placeholder="3x10" value="3x10">
+                </div>
+
+                <div class="inline">
+                    <div class="combo">
+                        <h3>Todas</h3>
+                        <select id="txtModal" size="5"></select>
+                    </div>
+                    <div class="midle-buttons">
+                        <button class="btn-primary" id="btn-add">></button>
+                        <button class="btn-primary" id="btn-sub"><</button>
+                    </div>
+                    <div class="combo">
+                        <h3>Ativas</h3>
+                        <select id="txtMyModal" size="5"></select>
+                    </div>
+                </div>
+                <button id="btnCriar" class="btn btn-primary">Criar</button>
+            </fieldset>
+        </div>
+
+
+    </div>
+
+    
+
+</template>
+<script>
+
+    document.querySelector('.title-viewUser').innerHTML = localStorage.getItem('email')
+    document.querySelector('#edtMail').value = localStorage.getItem('email')
+    document.querySelector('#edtNick').value = localStorage.getItem('nick')
+
+    cityCod(localStorage.getItem('cod_local')).then((txt)=>{
+        const json = JSON.parse(txt)
+        document.querySelector('#edtCidade').value = json.nome+'-'+json.microrregiao.mesorregiao.UF.sigla
+        mainData.viewUser.data.cod_local = json.id
+        mainData.viewUser.data.cod_regiao = json.microrregiao.id
+
+    })
+
+    function uploadImg(){
+        uploadImage('up_file','/../assets/users/',localStorage.getItem('idUser')+'.jpg')
+        .then(()=>{                     
+            document.querySelector('#imgUser').src = `assets/users/${localStorage.getItem('idUser')}.jpg?${new Date().getTime()}`
+            document.querySelector('#pic-perfil').src = `assets/users/${localStorage.getItem('idUser')}.jpg?${new Date().getTime()}`            
+        })
+    }
+
+    function addModal(idModal,getserie){
+        getserie = getserie.trim().toLowerCase().split('x')
+        const params = new Object;
+            params.hash = localStorage.getItem('hash')
+            params.id_modal = idModal
+            params.serie = (isNaN(parseInt(getserie[0])) || getserie[0]=='0') ? 1 : parseInt(getserie[0])
+            params.lance = isNaN(parseInt(getserie[1])) ? 0 : parseInt(getserie[1])
+        const myPromisse = queryDB(params,5);
+        myPromisse.then((resolve)=>{                
+            mainData.func.fillModal('#txtMyModal',localStorage.getItem('hash'),0)
+            mainData.perfil.func.fillModal()
+        })
+    }
+
+    document.querySelector('#btnCriar').addEventListener('click',()=>{
+        openHTML('newModal.html','modal',null)
+    })
+
+    document.querySelector('#up_file').addEventListener('change',()=>{
+        showFile('#up_file','#cnvImg')
+        uploadImg()
+    })
+
+    document.querySelector('#cnvImg').addEventListener('click',()=>{        
+        openHTML('perfil.html','modal',{address:localStorage.getItem('idUser')})
+    })
+
+    document.querySelector('#btn-add').addEventListener('click',()=>{
+        const id = document.querySelector('#txtModal').value
+        addModal(id,document.querySelector('#edtSerie').value)
+    })
+
+    document.querySelector('#btn-sub').addEventListener('click',()=>{
+        const id = document.querySelector('#txtMyModal').value
+        addModal(id,'3x10')
+    })
+
+
+
+    document.querySelector('#btnSave').addEventListener('click',()=>{
+        const pass = document.querySelector('#edtPass').value.trim()
+        const repass = document.querySelector('#edtRePass').value.trim()
+        const nick = document.querySelector('#edtNick').value.trim()
+
+        if(checkMail('#edtMail')){
+            if(pass == repass){
+                if(goon('edtPass,edtMail,edtCidade')){
+                    const email = document.querySelector('#edtMail').value.trim().toLowerCase()
+                    const params = new Object;
+                        params.id = localStorage.getItem('idUser')
+                        params.email = email
+                        params.hash = (email+pass).getHash(77)
+                        params.nick = nick
+                        params.cod_local  = mainData.viewUser.data.cod_local
+                        params.cod_regiao = mainData.viewUser.data.cod_regiao
+
+                    const myPromisse = queryDB(params,1);
+                    myPromisse.then((resolve)=>{
+                        alert('Usuário e senha foram salvos com sucesso!')
+                        localStorage.setItem('email',params.email)
+                        localStorage.setItem('hash',params.hash)
+                        localStorage.setItem('nick',params.nick)
+                        localStorage.setItem('cod_local',params.cod_local)
+                        localStorage.setItem('cod_regiao',params.cod_regiao)
+/*                        if(document.querySelector('#up_file').value != ""){
+
+                        }
+*/                        
+                        closeModal()
+                    })
+                }
+            }else{
+                alert('As senhas não conferem.')
+                document.querySelector('#edtRePass').focus()
+            }
+        }
+    })
+
+
+    const back = backFunc({'filename':`../assets/users/${localStorage.getItem('idUser')}.jpg`},1)
+
+    back.then((resp)=>{
+        const imgExist = JSON.parse(resp)
+        const path = imgExist ? `assets/users/${localStorage.getItem('idUser')}.jpg` : 'assets/default/user.jpeg'    
+        loadImg(path)
+    })
+    mainData.func.fillModal('#txtModal',localStorage.getItem('hash'))
+    mainData.func.fillModal('#txtMyModal',localStorage.getItem('hash'),0)
+
+</script>

@@ -1,0 +1,247 @@
+<title>
+    
+</title>
+<template>
+    <style>
+
+        select{
+            width: 175px;
+            -moz-appearance: none;
+            border: solid 1px gray;
+            border-radius: 5px;
+            min-width: 50px;
+            padding: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .activities{
+            text-align: center;            
+        }
+
+        .abs{
+            position: unset !important;
+        }
+
+        .btn-doit{
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+
+        .form-perfil{
+            padding: 20px ;
+            padding-top: 50px;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top{
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            justify-content: space-around;
+        }
+
+        .middle{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .perfil-box{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .perfil-box p{
+            padding: 0;
+            text-indent: 0;
+        }
+
+        #pic-perfil{
+            width: 100px;
+            height: 100px;
+        }
+
+        #last-4{
+            font-size: 3em;
+            font-weight: 600;
+        }
+
+        .left-perfil{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .rigth-perfil{
+            width: 100%;
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .line{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .line > *{
+            /*padding: 0;*/
+            text-indent: 0;
+        }
+
+    </style>
+
+    <div class="form-perfil">
+
+        <div class="top">
+            <div class="left-perfil">
+                <img id="pic-perfil" class="imgUser" src="assets/user.jpeg" alt="">
+                <div class="myDate"></div>
+            </div>
+
+            <div class="rigth-perfil">
+                <select id="cmbMod"></select>
+                <table id="tbl-data"></table>
+            </div>
+
+        </div>
+
+        <div class="middle">
+            <div class="perfil-box">
+                <p>Últimas 4 semanas</p>
+                <p id="last-4">0</p>
+                <button id="btn-doit" class="btn btn-primary btn-doit" >I DID IT</button>
+
+            </div>
+        </div>
+
+        <div class="botton">
+
+
+
+            <div class="activities"></div>
+ 
+
+        </div>
+
+    </div>
+
+
+</template>
+<script>
+
+    const data = mainData.perfil.data
+    const func = mainData.perfil.func
+
+    const usr = parseInt(localStorage.getItem('idUser'))
+    const back = backFunc({'filename':`../assets/users/${usr}.jpg`},1)
+    back.then((resp)=>{
+        const imgExist = JSON.parse(resp)    
+        document.querySelector('#pic-perfil').src = imgExist ? `assets/users/${usr}.jpg?${new Date().getTime()}` : 'assets/default/user.jpeg'
+    })
+
+    document.querySelector('.myDate').appendChild(calendar())
+
+    document.querySelector('#btn-doit').addEventListener('click',()=>{
+        const modal = document.querySelector('#cmbMod').value.trim()
+        if(modal.length>0){
+            if(confirm('Adicionar Série Feita?')){
+                const lance = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].lance
+            const params = new Object;
+                    params.hash =  localStorage.getItem('hash')
+                    params.id_modal =  modal
+                    params.serie = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex].serie
+                    params.lance = lance == '0' ? parseInt(prompt('Digite a quantidade executada')) : lance
+
+
+                if(!isNaN(params.lance)){
+                    const myPromisse = queryDB(params,2)
+                    myPromisse.then((resolve)=>{
+                        document.querySelector('.myDate').innerHTML = ''
+                        document.querySelector('.myDate').appendChild(calendar())
+                        getPerfil(params.id_modal)
+                    })
+                }else{
+                    alert('Número digitado inválido!')
+                }
+
+            }
+        }else{
+            alert('Nenhuma modalidade ativada. Vá em menu|config -> modalidades.')
+        }
+
+    })
+
+
+    func.fillModal = ()=>{
+        const fill =  mainData.func.fillModal('#cmbMod',localStorage.getItem('hash'),0)
+
+        fill.then((resolve)=>{            
+            getPerfil(document.querySelector('#cmbMod').value)
+        })
+    }
+
+    function getPerfil(id_modal){
+        const params = new Object;
+        params.hash = localStorage.getItem('hash')
+        params.id_modal = id_modal
+
+        const myPromisse = queryDB(params,3);
+        myPromisse.then((resolve)=>{
+            const treinos = JSON.parse(resolve)
+console.log(treinos)         
+            const allday = document.querySelectorAll('.day-use')
+            for(let i=0; i<allday.length; i++){
+                allday[i].className = 'day day-use'
+                allday[i].title = ''
+            }
+
+            document.querySelector('#last-4').innerHTML = treinos.length
+            let lances = 0
+            for(let i=0; i<treinos.length; i++){
+                try{
+                    const serie = parseInt(treinos[i].serie)
+                    lances += parseInt(treinos[i].lance)
+                    const day =  document.getElementById(treinos[i].dia.substr(0,10))
+                    let dia = day.title==='' ? 1 : parseInt(day.title) +1
+                    day.title  = dia
+                    
+                    if(dia > 0 && dia < serie){
+                        day.classList.add(`red`)
+                    }else if(dia == serie){
+                        day.classList.remove(`red`)
+                        day.classList.add(`yellow`)
+                    }else if(dia > serie){
+                        day.classList.remove(`yellow`)
+                        day.classList.add(`black`)
+                    }
+//                    day.classList.add(`day-confirm-${dia}`)
+                }catch{
+
+                }
+            }
+            document.querySelector('.activities').innerHTML = lances + ' atividades'      
+        })
+    }
+
+//    getPerfil(1)
+    removeHash()
+    func.fillModal()
+
+    document.querySelector('#cmbMod').addEventListener('change',()=>{
+        const opt = document.querySelector('#cmbMod').options[document.querySelector('#cmbMod').selectedIndex]
+        getPerfil(document.querySelector('#cmbMod').value)
+    })
+
+</script>
